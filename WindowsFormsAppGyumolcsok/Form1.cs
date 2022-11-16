@@ -101,5 +101,83 @@ namespace WindowsFormsAppGyumolcsok
             conn.Close();
             gyumolcsok_lista_update();
         }
+
+        private void update_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0)
+            {
+                MessageBox.Show("Nincs kijelölve gyümölcs!");
+                return;
+            }
+            cmd.Parameters.Clear();
+            gyumolcsok kivalasztott_gyumolcs = (gyumolcsok)listBox1.SelectedItem;
+            cmd.CommandText = "UPDATE `gyumolcsok` SET `nev`= @nev,`egysegar`= @egysegar,`mennyiseg`= @mennyiseg WHERE `id` = @id";
+            cmd.Parameters.AddWithValue("@id", textBoxId.Text);
+            cmd.Parameters.AddWithValue("@nev", textBoxNev.Text);
+            cmd.Parameters.AddWithValue("@egysegar", numericUpDownEgysegar.Value);
+            cmd.Parameters.AddWithValue("@mennyiseg", numericUpDownMennyiseg.Value);
+            conn.Open();
+            if (cmd.ExecuteNonQuery() == 1)
+            {
+                MessageBox.Show("Módosítás sikeres votl!");
+                conn.Close();
+                textBoxId.Text = "";
+                textBoxId.Text = "";
+                textBoxNev.Text = "";
+                numericUpDownEgysegar.Value = numericUpDownEgysegar.Minimum;
+                numericUpDownMennyiseg.Value = numericUpDownMennyiseg.Minimum;
+                gyumolcsok_lista_update();
+            }
+            else
+            {
+                MessageBox.Show("Az adatok módosítása sikertelen!");
+            }
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+        }
+
+        private void delete_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            cmd.CommandText = "DELETE FROM `gyumolcsok` WHERE id = @id";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@id", textBoxId.Text);
+            conn.Open();
+            if (cmd.ExecuteNonQuery() == 1)
+            {
+                MessageBox.Show("Törlés sikeres");
+                conn.Close();
+                textBoxId.Text = "";
+                textBoxId.Text = "";
+                textBoxNev.Text = "";
+                numericUpDownEgysegar.Value = numericUpDownEgysegar.Minimum;
+                numericUpDownMennyiseg.Value = numericUpDownMennyiseg.Minimum;
+                gyumolcsok_lista_update();
+            }
+            else
+            {
+                MessageBox.Show("Törlés sikertelen");
+            }
+            
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            gyumolcsok gyumolcsok = (gyumolcsok)listBox1.SelectedItem;
+            textBoxId.Text = gyumolcsok.Id.ToString();
+            textBoxNev.Text = gyumolcsok.Nev;
+            numericUpDownEgysegar.Value = gyumolcsok.Egysegar;
+            numericUpDownMennyiseg.Value = gyumolcsok.Mennyiseg;
+
+        }
     }
 }
